@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "build": "npx esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --external:@smythos/sdk --external:express --external:cors",
-    "start": "node dist/server.js",
+    "start": "bash start.sh",
     "dev": "node dist/server.js"
   },
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
