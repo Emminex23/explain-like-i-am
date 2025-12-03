@@ -1,13 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import OpenAI from 'openai';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-
-import express from 'express';
-import cors from 'cors';
-import OpenAI from 'openai';
+import { Agent } from '@smythos/sdk';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -19,13 +12,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(join(__dirname, '../public')));
 
-// Initialize OpenAI with API key from environment variable
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-// System prompt for the agent
-const SYSTEM_PROMPT = `You are "ELI" (Explain Like I'm...), the world's friendliest translator of complexity.
+// ============================================
+// 🤖 CREATE SMYTHOS AGENT
+// ============================================
+const agent = new Agent({
+  name: 'ELI',
+  model: 'gpt-4o',
+  behavior: `You are "ELI" (Explain Like I'm...), the world's friendliest translator of complexity.
 
 Your superpower is taking ANY complex content and explaining it perfectly for ANY audience.
 
@@ -40,14 +33,15 @@ When explaining:
 - Keep explanations concise (3-5 sentences)
 - Use analogies relevant to the audience's world
 - Make it memorable and engaging
-- Match the cultural context if specified`;
+- Match the cultural context if specified`
+});
 
 // Health check
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-// Main explanation endpoint
+// Main explanation endpoint - USES SMYTHOS AGENT
 app.post('/api/explain', async (req, res) => {
   const { content, audience } = req.body;
 
@@ -56,13 +50,8 @@ app.post('/api/explain', async (req, res) => {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { 
-          role: 'user', 
-          content: `Explain the following content for ${audience}.
+    const response = await agent.prompt(
+      `Explain the following content for ${audience}.
 
 RULES:
 - Keep it to 3-5 sentences
@@ -72,20 +61,17 @@ RULES:
 - If a cultural context is implied, use culturally relevant examples
 
 CONTENT TO EXPLAIN:
-${content}` 
-        }
-      ]
-    });
+${content}`
+    );
 
-    const explanation = completion.choices[0]?.message?.content || 'Sorry, I could not generate an explanation.';
-    res.json({ explanation });
+    res.json({ explanation: response });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to generate explanation' });
   }
 });
 
-// Simplify further endpoint
+// Simplify endpoint - USES SMYTHOS AGENT
 app.post('/api/simplify', async (req, res) => {
   const { explanation, audience } = req.body;
 
@@ -94,13 +80,8 @@ app.post('/api/simplify', async (req, res) => {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { 
-          role: 'user', 
-          content: `This explanation for ${audience} is still too complex. Make it EVEN SIMPLER.
+    const response = await agent.prompt(
+      `This explanation for ${audience} is still too complex. Make it EVEN SIMPLER.
 
 RULES:
 - Use shorter sentences
@@ -109,13 +90,10 @@ RULES:
 - 2-3 sentences max
 
 CURRENT EXPLANATION:
-${explanation}` 
-        }
-      ]
-    });
+${explanation}`
+    );
 
-    const simplified = completion.choices[0]?.message?.content || 'Sorry, I could not simplify further.';
-    res.json({ explanation: simplified });
+    res.json({ explanation: response });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Failed to simplify' });
@@ -126,7 +104,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`
 ═══════════════════════════════════════════════════════════
-  🧠 EXPLAIN LIKE I'M... is running!
+  🧠 EXPLAIN LIKE I'M... (SmythOS Agent)
   
   Open in your browser: http://localhost:${PORT}
 ═══════════════════════════════════════════════════════════
