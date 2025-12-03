@@ -2,9 +2,9 @@
 
 **I can explain anything to anyone. Try me!**
 
-An AI-powered agent that translates complex content into simple explanations tailored for ANY audience. Built for the [SmythOS](https://smythos.com) Smyth Forged competition.
+An AI-powered agent that translates complex content into simple explanations tailored for ANY audience. Built with the [SmythOS SDK](https://smythos.com).
 
-![Explain Like I'm... Demo](./demo.png)
+![Explain Like I'm... Demo](./images/Screenshot%202025-12-01%20at%201.50.25 AM.png)
 
 ---
 
@@ -66,17 +66,25 @@ Explain Like I'm... takes complex content and explains it perfectly for any audi
 
 3. **Set up your API key:**
 
-   Create a `.env` file in the project root:
+   The SmythOS SDK uses a secure vault system for API keys. Create the vault file:
 ```bash
-   echo "OPENAI_API_KEY=sk-your-openai-api-key-here" > .env
+   mkdir -p ~/.smyth/.sre
 ```
 
-   Or manually create `.env` and add:
-```
-   OPENAI_API_KEY=sk-your-openai-api-key-here
+   Then create `~/.smyth/.sre/vault.json` with your API key:
+```json
+   {
+     "default": {
+       "openai": "sk-your-openai-api-key-here",
+       "anthropic": "",
+       "googleai": "",
+       "groq": "",
+       "togetherai": ""
+     }
+   }
 ```
 
-   > ⚠️ **Important:** Never commit your `.env` file to GitHub!
+   > 💡 **Tip:** Only the `openai` key is required for this project.
 
 ---
 
@@ -87,21 +95,20 @@ Explain Like I'm... takes complex content and explains it perfectly for any audi
    npm run build
 ```
 
-2. **Start the app:**
+1. **Start the web app:**
 ```bash
    npm run dev
 ```
 
-3. **Open your browser:**
+1. **Open your browser:**
 
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-4. **Start explaining!**
+2. **Start explaining!**
    - Paste any complex content (or click an example)
    - Type who you want it explained for
    - Click "Explain It!" ✨
    - Want it simpler? Click "Simpler"
-
 ---
 
 ## 📁 Project Structure
@@ -110,10 +117,12 @@ explain-like-i-am/
 ├── public/
 │   └── index.html        # Web UI
 ├── src/
-│   └── server.ts         # Express server + OpenAI integration
+│   ├── index.ts          # CLI version
+│   └── server.ts         # Web server
 ├── dist/                  # Compiled output
-├── .env                   # API key (don't commit!)
 ├── package.json
+├── tsconfig.json
+├── rollup.config.js
 └── README.md
 ```
 
@@ -123,47 +132,49 @@ explain-like-i-am/
 
 | Script | Command | Description |
 |--------|---------|-------------|
-| `npm run build` | Compiles TypeScript | Build the server |
-| `npm run dev` | Runs with .env loaded | Start development server |
-| `npm start` | Runs compiled server | Start production server |
+| `npm run build` | `rollup -c` | Build the CLI version |
+| `npm run build:server` | `esbuild...` | Build the web server |
+| `npm start` | `node dist/index.js` | Run the CLI |
+| `npm run dev` | `node dist/server.js` | Run the web server |
 
 ---
 
 ## 🎨 Screenshots
 
 ### Light Mode
-![Light Mode](./screenshots/light-mode.png)
+![Light Mode](./images/Screenshot%202025-12-01%20at%201.49.05 AM.png)
 
 ### Dark Mode
-![Dark Mode](./screenshots/dark-mode.png)
+![Dark Mode](./images/Screenshot%202025-12-01%20at%201.49.20 AM.png)
 
 ### Explanation Result
-![Result](./screenshots/result.png)
+![Result](./images/Screenshot%202025-12-01%20at%201.50.25 AM.png)
 
 ---
 
 ## 🔧 How It Works
+
+1. **SmythOS Agent** – A GPT-4o powered agent with a custom "ELI" personality
+2. **Express Server** – Handles API requests for explanations
+3. **Web UI** – Clean HTML/CSS/JS interface
+4. **Simplify Endpoint** – Iteratively simplifies explanations on demand
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Web UI    │────▶│   Express   │────▶│   OpenAI    │
-│  (Browser)  │◀────│   Server    │◀────│   GPT-4o    │
+│   Web UI    │────▶│   Express   │────▶│  SmythOS    │
+│  (Browser)  │◀────│   Server    │◀────│   Agent     │
 └─────────────┘     └─────────────┘     └─────────────┘
 ```
-
-1. **Web UI** – Clean HTML/CSS/JS interface with dark mode
-2. **Express Server** – Handles API requests at `/api/explain` and `/api/simplify`
-3. **OpenAI GPT-4o** – Powers the "ELI" personality that adapts explanations
 
 ---
 
 ## 🙏 Acknowledgments
 
-- Built for [SmythOS](https://smythos.com) Smyth Forged
+- Built with [SmythOS SDK](https://smythos.com)
 - Powered by [OpenAI GPT-4o](https://openai.com)
 
 ---
 
 <p align="center">
   <b>Everyone deserves to understand everything.</b><br>
-  Built with 💜 for SmythOS Smyth Forged
+  Built with 💜 using SmythOS SDK
 </p>
