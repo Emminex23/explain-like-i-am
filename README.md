@@ -55,7 +55,7 @@ Explain Like I'm... takes complex content and explains it perfectly for any audi
 
 1. **Clone the repository:**
 ```bash
-   git clone https://github.com/YOUR_USERNAME/explain-like-i-am.git
+   git clone https://github.com/Emminex23/explain-like-i-am.git
    cd explain-like-i-am
 ```
 

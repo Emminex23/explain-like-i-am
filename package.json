@@ -1,14 +1,14 @@
 {
   "name": "explain-like-i-am",
   "version": "1.0.0",
-  "description": "",
+  "description": "I can explain anything to anyone. Built with SmythOS SDK.",
   "type": "module",
   "scripts": {
-    "build": "rollup -c ./rollup.config.js",
-    "build:server": "npx esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --external:@smythos/sdk --external:express --external:cors",
-    "dbgstart": "node --enable-source-maps dist/index.js",
-    "start": "node dist/index.js",
-    "dev": "node dist/server.js"
+    "build": "npx esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --external:@smythos/sdk --external:express --external:cors",
+    "start": "mkdir -p ~/.smyth/.sre && echo '{\"default\":{\"openai\":\"'$OPENAI_API_KEY'\"}}' > ~/.smyth/.sre/vault.json && node dist/server.js"
+  },
+  "engines": {
+    "node": "18"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^6.1.0",
